@@ -33,6 +33,7 @@ namespace ApiLibreria.Controllers
         [HttpGet]
         [Route("{id}", Name = "GetById")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<Libro> GetLibroById(int id)
         {
@@ -42,6 +43,11 @@ namespace ApiLibreria.Controllers
             }
 
             var libro = _libroRepository.GetLibroById(id);
+
+            if (libro == null)
+            {
+                return NotFound($"El libro con el {id} not es valido");
+            }
 
             return Ok(libro);
         }
@@ -82,6 +88,7 @@ namespace ApiLibreria.Controllers
         [Route("Update", Name = "UpdateLibro")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<LibrosDTO> UpdateLibro([FromBody] LibrosDTO model)
         {
@@ -100,6 +107,10 @@ namespace ApiLibreria.Controllers
 
             //_libroDBContext.Update(libroUpdate);
             //_libroDBContext.SaveChanges();
+            if (libroUpdate == null)
+            {
+                return NotFound($"El {model.Id} que estas intentando actualizar es un not found");
+            }
 
             _libroRepository.UpdateLibro(libroUpdate);
 
@@ -120,7 +131,7 @@ namespace ApiLibreria.Controllers
 
             var deleteLibro = _libroRepository.GetLibroById(id);
 
-            if (deleteLibro.Id == null)
+            if (deleteLibro == null)
             {
                 return NotFound($"El {id} que ingresaste es null ");
             }
